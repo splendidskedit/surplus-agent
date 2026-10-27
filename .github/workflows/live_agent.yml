@@ -1,0 +1,30 @@
+name: 24-7 Zero-Cost Surplus Liquidation Agent
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+      - name: Run Liquidation Discovery Cycle
+        run: python cloud_worker.py
+      - name: Commit Updated SQLite Catalog Back to Repo
+        run: |
+          git config user.name "SurplusOS-Bot"
+          git config user.email "bot@surplusos.local"
+          git add liquidation.db
+          git diff --staged --quiet || git commit -m "Automated catalog sync"
+          git push

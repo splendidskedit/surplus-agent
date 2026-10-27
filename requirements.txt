@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+ollama
+ddgs
+beautifulsoup4
+httpx
+pydantic
